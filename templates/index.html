@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Netflix Recommender</title>
+  <link rel="stylesheet" href="/templates/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Netflix Movie Recommender</h1>
+    <form id="form">
+      <label>Type:</label>
+      <select name="type">
+        <option value="Movie">Movie</option>
+        <option value="TV Show">TV Show</option>
+      </select>
+
+      <label>Genre:</label>
+      <select name="genre">
+        {% for g in genres %}
+          <option value="{{ g }}">{{ g }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Year Range:</label>
+      <input type="number" name="year_start" value="2010" min="2000" max="2023"> to
+      <input type="number" name="year_end" value="2020" min="2000" max="2023">
+
+      <label>View Preference:</label>
+      <select name="view_option">
+        <option>Most Viewed</option>
+        <option>Least Viewed</option>
+      </select>
+
+      <label>Analysis Option:</label>
+      <select name="analysis_option">
+        <option>Netflix Insights</option>
+        <option>Movie Purchase Recommendation</option>
+        <option>Customer Complaints & Suggestions</option>
+      </select>
+
+      <button type="submit">Get Recommendations</button>
+    </form>
+
+    <div id="results">
+      <div id="tableData"></div>
+      <div id="analysisOutput"></div>
+      <div id="plotArea"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const res = await fetch("/recommend", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+
+      let tableHTML = "<h2>Top Movies</h2><table><tr><th>Title</th><th>Genre</th><th>Year</th><th>Watchtime (M)</th></tr>";
+      data.table.forEach(row => {
+        tableHTML += `<tr><td>${row.Title}</td><td>${row.Genre}</td><td>${row.Premiere}</td><td>${row["Watchtime in Million"]}</td></tr>`;
+      });
+      tableHTML += "</table>";
+      document.getElementById("tableData").innerHTML = tableHTML;
+
+      let analysis = "";
+      if (data.insights.length) {
+        analysis += "<h2>Netflix Insights</h2><ul>";
+        data.insights.forEach(i => analysis += `<li>${i}</li>`);
+        analysis += "</ul>";
+      } else if (data.recommendation) {
+        analysis += `<h2>Recommendation</h2><p>${data.recommendation}</p>`;
+      } else if (data.feedback.length) {
+        analysis += "<h2>Customer Feedback</h2><ul>";
+        data.feedback.forEach(f => analysis += `<li>${f}</li>`);
+        analysis += "</ul>";
+      }
+      document.getElementById("analysisOutput").innerHTML = analysis;
+
+      if (data.plots.length) {
+        document.getElementById("plotArea").innerHTML = `<h2>Watchtime Plot</h2><img src="${data.plots[0]}" width="100%">`;
+      } else {
+        document.getElementById("plotArea").innerHTML = "";
+      }
+    });
+  </script>
+</body>
+</html>
