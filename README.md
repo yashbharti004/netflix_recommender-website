@@ -33,4 +33,4 @@ This is a web-based Netflix Movie Recommendation System that lets users explore,
 ---
 
 ## 🗂️ Folder Structure
-
+netflix-recommender/ ├── app.py ├── flixpatrol.csv ├── templates/ │ └── index.html ├── static/ │ └── style.css ├── requirements.txt └── README.md
