@@ -42,3 +42,13 @@ netflix-recommender/
 │ └── style.css
 ├── requirements.txt 
 └── README.md
+
+
+---
+
+## 🚀 How to Run Locally
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/netflix-recommender.git
+   cd netflix-recommender
